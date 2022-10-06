@@ -1,4 +1,4 @@
-package com.damiansiemieniec.logbucket;
+package com.damiansiemieniec.logbucket.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
