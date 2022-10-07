@@ -2,12 +2,15 @@ version: "3"
 services:
   zookeeper:
     image: 'bitnami/zookeeper:latest'
+    container_name: log_bucket_zookeeper
     ports:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+
   kafka:
     image: 'bitnami/kafka:latest'
+    container_name: log_bucket_kafka
     ports:
       - '9092:9092'
     environment:
@@ -18,3 +21,12 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
+
+  solr:
+    image: solr
+    container_name: log_bucket_solr
+    ports:
+      - "8983:8983"
+    command:
+      - solr-precreate
+      - gettingstarted
