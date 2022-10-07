@@ -8,13 +8,17 @@ import java.util.List;
 public class MessageHandler {
 
     private final SolrService solrService;
+    private final CassandraService cassandraService;
 
-    public MessageHandler(SolrService solrService) {
+    public MessageHandler(SolrService solrService, CassandraService cassandraService) {
         this.solrService = solrService;
+        this.cassandraService = cassandraService;
     }
     
     public void handle(List<String> messages) {
         List<IndexableLogMessage> logs = messages.stream().map(IndexableLogMessage::new).toList();
-        solrService.index("gettingstarted", logs);
+        String indexName = "gettingstarted";
+        solrService.index(indexName, logs);
+        cassandraService.saveMetadata(indexName, logs);
     }
 }

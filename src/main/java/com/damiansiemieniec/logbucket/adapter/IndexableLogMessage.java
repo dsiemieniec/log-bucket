@@ -4,6 +4,8 @@ import org.apache.solr.common.SolrInputDocument;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
+
 public class IndexableLogMessage {
     private JSONObject message;
 
@@ -23,5 +25,9 @@ public class IndexableLogMessage {
         }
 
         return document;
+    }
+
+    public Collection<String> getFieldNames() {
+        return this.toSolrInputDocument().getFieldNames();
     }
 }
