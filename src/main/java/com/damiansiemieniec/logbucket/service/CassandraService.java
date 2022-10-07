@@ -19,9 +19,12 @@ public class CassandraService {
         this.fieldRepository = fieldRepository;
     }
 
+    public List<String> findFieldNamesByIndexName(String indexName) {
+        return fieldRepository.findByIndexName(indexName).stream().map(Field::getName).toList();
+    }
+
     public void saveMetadata(String indexName, List<IndexableLogMessage> logs) {
-        List<Field> currentFields = fieldRepository.findByIndexName(indexName);
-        List<String> currentFieldNames = currentFields.stream().map(Field::getName).toList();
+        List<String> currentFieldNames = this.findFieldNamesByIndexName(indexName);
 
         List<Field> newFields = new ArrayList<>();
         for (IndexableLogMessage log : logs) {
