@@ -1,6 +1,6 @@
 package com.damiansiemieniec.logbucket.listener;
 
-import com.damiansiemieniec.logbucket.service.SolrService;
+import com.damiansiemieniec.logbucket.service.MessageHandler;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -11,11 +11,11 @@ import java.util.List;
 @Service
 public class MainTopicListener {
     private static final int MAX_BATCH_SIZE = 100;
-    private final SolrService solrService;
+    private final MessageHandler handler;
 
     @Autowired
-    public MainTopicListener(SolrService solrService) {
-        this.solrService = solrService;
+    public MainTopicListener(MessageHandler handler) {
+        this.handler = handler;
     }
 
     @KafkaListener(id = "mainTopicListener", topics = "mainTopic",  batch = "true", properties = {
@@ -23,7 +23,7 @@ public class MainTopicListener {
     })
     public void listen(List<String> messages) throws InterruptedException {
         System.out.println("Listener received " + messages.size() + " message(s)");
-        solrService.index(messages);
+        handler.handle(messages);
         Thread.sleep(2000); // ToDo: remove
     }
 }

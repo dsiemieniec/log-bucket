@@ -1,15 +1,12 @@
 package com.damiansiemieniec.logbucket.service;
 
+import com.damiansiemieniec.logbucket.adapter.IndexableLogMessage;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.Http2SolrClient;
-import org.apache.solr.common.SolrInputDocument;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -21,26 +18,10 @@ public class SolrService {
         this.solrClient = solrClient;
     }
 
-    public void index(List<String> messages) {
-        var documents = new ArrayList<SolrInputDocument>();
-        for (var message : messages) {
-            try {
-                var json = new JSONObject(message);
-                var document = new SolrInputDocument();
-                for (var field : json.keySet()) {
-                    document.addField(field, json.get(field));
-                }
-                documents.add(document);
-            } catch (JSONException exception) {
-                var document = new SolrInputDocument();
-                document.addField("message", message);
-                documents.add(document);
-            }
-        }
-
+    public void index(String collectionName, List<IndexableLogMessage> messages) {
         try {
-            solrClient.add("gettingstarted", documents);
-            solrClient.commit("gettingstarted");
+            solrClient.add(collectionName, messages.stream().map(IndexableLogMessage::toSolrInputDocument).toList());
+            solrClient.commit(collectionName);
         } catch (SolrServerException | IOException e) {
             e.printStackTrace();
         }
